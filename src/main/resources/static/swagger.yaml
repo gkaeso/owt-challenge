@@ -1,0 +1,62 @@
+openapi: 3.0.1
+info:
+  title: Contact Api Documentation
+  description: Contact Api Documentation
+  termsOfService: urn:tos
+  contact: { }
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  version: "2.0"
+servers:
+  - url: http://localhost:8080/
+tags:
+  - name: dummies
+
+paths:
+  /dummies:
+    post:
+      tags:
+        - dummies
+      summary: add a dummy
+      operationId: createDummy
+      requestBody:
+        required: true
+        description: dummyDto
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/DummyDto'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DummyDto'
+      x-codegen-request-body-name: contactDto
+
+components:
+  schemas:
+    DummyDto:
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttributeDto'
+    AttributeDto:
+      required:
+        - name
+        - value
+      type: object
+      properties:
+        name:
+          type: string
+        value:
+          type: number
