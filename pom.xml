@@ -53,6 +53,18 @@
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.chhsiao90/modelmapper-module-jsr310 -->
+        <dependency>
+            <groupId>com.github.chhsiao90</groupId>
+            <artifactId>modelmapper-module-jsr310</artifactId>
+            <version>1.2.1</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -82,7 +94,7 @@
                             <inputSpec>${project.basedir}/src/main/resources/static/swagger.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>com.owt.api.controller</apiPackage>
-                            <modelPackage>com.owt.api.model.dto</modelPackage>
+                            <modelPackage>com.owt.api.core.model.dto</modelPackage>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>data-platform-openapi</artifactId>
                             <artifactVersion>${project.version}</artifactVersion>

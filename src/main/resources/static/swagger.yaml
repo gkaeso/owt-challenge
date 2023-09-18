@@ -11,52 +11,182 @@ info:
 servers:
   - url: http://localhost:8080/
 tags:
-  - name: dummies
+  - name: contacts
 
 paths:
-  /dummies:
+  /contacts:
     post:
       tags:
-        - dummies
-      summary: add a dummy
-      operationId: createDummy
+        - contacts
+      summary: add a contact
+      operationId: createContact
       requestBody:
         required: true
-        description: dummyDto
+        description: contactDto
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/DummyDto'
+              $ref: '#/components/schemas/CreateContactDto'
       responses:
         200:
-          description: OK
+          description: return created contact
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DummyDto'
+                $ref: '#/components/schemas/CreatedContactDto'
       x-codegen-request-body-name: contactDto
+  /contacts/{id}:
+    get:
+      tags:
+        - contacts
+      summary: read a contact
+      operationId: getContact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: return updated contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadContactDto'
+    put:
+      tags:
+        - contacts
+      summary: update a contact
+      operationId: updateContact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContactDto'
+      responses:
+        200:
+          description: return updated contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatedContactDto'
+      x-codegen-request-body-name: contactDto
+    delete:
+      tags:
+        - contacts
+      summary: delete contact
+      operationId: deleteContact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: contact has been delete
+          content: { }
 
 components:
   schemas:
-    DummyDto:
-      required:
-        - id
+    # Contact
+    AddressDto:
+      type: object
+      properties:
+        street:
+          type: string
+        postCode:
+          type: string
+        city:
+          type: string
+    ContactDto:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/AttributeDto'
-    AttributeDto:
-      required:
-        - name
-        - value
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          $ref: '#/components/schemas/AddressDto'
+    CreateContactDto:
+      allOf:
+        - type: object
+          required:
+            - firstName
+            - lastName
+            - email
+            - phone
+            - address
+        - $ref: '#/components/schemas/ContactDto'
+    CreatedContactDto:
+      allOf:
+        - type: object
+          required:
+            - id
+            - firstName
+            - lastName
+            - email
+            - phone
+            - address
+        - $ref: '#/components/schemas/ContactDto'
+    ReadContactDto:
+      allOf:
+        - type: object
+          required:
+            - id
+            - firstName
+            - lastName
+            - email
+            - phone
+            - address
+        - $ref: '#/components/schemas/ContactDto'
+    UpdateContactDto:
+      allOf:
+        - type: object
+          required:
+            - firstName
+            - lastName
+            - email
+            - phone
+            - address
+        - $ref: '#/components/schemas/ContactDto'
+    UpdatedContactDto:
+      allOf:
+        - type: object
+          required:
+            - id
+            - firstName
+            - lastName
+            - email
+            - phone
+            - address
+        - $ref: '#/components/schemas/ContactDto'
+    # Error
+    ErrorDto:
       type: object
       properties:
-        name:
+        timestamp:
           type: string
-        value:
-          type: number
+          format: date-time
+        type:
+          type: string
+        message:
+          type: string
