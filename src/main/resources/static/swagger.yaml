@@ -11,52 +11,102 @@ info:
 servers:
   - url: http://localhost:8080/
 tags:
-  - name: dummies
+  - name: contacts
 
 paths:
-  /dummies:
+  /contacts:
     post:
       tags:
-        - dummies
-      summary: add a dummy
-      operationId: createDummy
+        - contacts
+      summary: add a contact
+      operationId: createContact
       requestBody:
         required: true
-        description: dummyDto
+        description: contactDto
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/DummyDto'
+              $ref: '#/components/schemas/ContactDto'
       responses:
         200:
-          description: OK
+          description: return created contact
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DummyDto'
+                $ref: '#/components/schemas/ContactDto'
       x-codegen-request-body-name: contactDto
+  /contacts/{id}:
+    put:
+      tags:
+        - contacts
+      summary: update a contact
+      operationId: updateContact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactDto'
+      responses:
+        200:
+          description: return updated contact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactDto'
+      x-codegen-request-body-name: contactDto
+    delete:
+      tags:
+        - contacts
+      summary: delete contact
+      operationId: deleteContact
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: contact has been delete
+          content: { }
 
 components:
   schemas:
-    DummyDto:
-      required:
-        - id
+    ContactDto:
       type: object
+      required:
+        - firstname
+        - lastname
+        - email
       properties:
         id:
           type: string
           format: uuid
-        attributes:
-          type: array
-          items:
-            $ref: '#/components/schemas/AttributeDto'
-    AttributeDto:
-      required:
-        - name
-        - value
+        firstname:
+          type: string
+        lastname:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        address:
+          $ref: '#/components/schemas/AddressDto'
+    AddressDto:
       type: object
       properties:
-        name:
+        street:
           type: string
-        value:
-          type: number
+        postCode:
+          type: string
+        city:
+          type: string
