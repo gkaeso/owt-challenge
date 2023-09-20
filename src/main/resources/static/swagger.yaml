@@ -12,6 +12,7 @@ servers:
   - url: http://localhost:8080/
 tags:
   - name: contacts
+  - name: skills
 
 paths:
   /contacts:
@@ -98,6 +99,90 @@ paths:
           description: contact has been delete
           content: { }
 
+  /skills:
+    post:
+      tags:
+        - skills
+      summary: add a skill
+      operationId: createSkill
+      requestBody:
+        required: true
+        description: create a skill
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/CreateSkillDto'
+      responses:
+        200:
+          description: return created skill
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedSkillDto'
+      x-codegen-request-body-name: skillDto
+  /skills/{id}:
+    get:
+      tags:
+        - skills
+      summary: read a skill
+      operationId: getSkill
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: return updated skill
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadSkillDto'
+    put:
+      tags:
+        - skills
+      summary: update a skill
+      operationId: updateSkill
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSkillDto'
+      responses:
+        200:
+          description: return updated skill
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatedSkillDto'
+      x-codegen-request-body-name: skillDto
+    delete:
+      tags:
+        - skills
+      summary: delete skill
+      operationId: deleteSkill
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: skill is deleted
+          content: { }
+
 components:
   schemas:
     # Contact
@@ -179,6 +264,60 @@ components:
             - phone
             - address
         - $ref: '#/components/schemas/ContactDto'
+    # Skill
+    LevelDto:
+      type: string
+      enum:
+        - JUNIOR
+        - SENIOR
+        - EXPERT
+    SkillDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        level:
+          $ref: '#/components/schemas/LevelDto'
+    CreateSkillDto:
+      allOf:
+        - type: object
+          required:
+            - name
+            - level
+        - $ref: '#/components/schemas/SkillDto'
+    CreatedSkillDto:
+      allOf:
+        - type: object
+          required:
+            - id
+            - name
+            - level
+        - $ref: '#/components/schemas/SkillDto'
+    ReadSkillDto:
+      allOf:
+        - type: object
+          required:
+            - id
+            - name
+        - $ref: '#/components/schemas/SkillDto'
+    UpdateSkillDto:
+      allOf:
+        - type: object
+          required:
+            - name
+            - level
+        - $ref: '#/components/schemas/SkillDto'
+    UpdatedSkillDto:
+      allOf:
+        - type: object
+          required:
+            - id
+            - name
+            - level
+        - $ref: '#/components/schemas/SkillDto'
     # Error
     ErrorDto:
       type: object

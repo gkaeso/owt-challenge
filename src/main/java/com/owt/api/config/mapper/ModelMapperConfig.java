@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.owt.api.core.contact.Contact;
 import com.owt.api.core.model.dto.*;
+import com.owt.api.core.skill.Skill;
 
 @Configuration
 public class ModelMapperConfig
@@ -17,9 +18,12 @@ public class ModelMapperConfig
     {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.registerModule(new Jsr310Module());
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STANDARD);
+        modelMapper.getConfiguration()
+                   .setMatchingStrategy(MatchingStrategies.STANDARD);
 
         configureContact(modelMapper);
+        configureSkill(modelMapper);
+
         return modelMapper;
     }
 
@@ -42,5 +46,14 @@ public class ModelMapperConfig
         modelMapper.createTypeMap(Contact.class, UpdatedContactDto.class)
                    .addMapping(Contact::getKeyId, UpdatedContactDto::setId)
                    .addMapping(Contact::getPhoneNumber, UpdatedContactDto::setPhone);
+    }
+
+    private void configureSkill(ModelMapper modelMapper)
+    {
+        modelMapper.createTypeMap(Skill.class, CreatedSkillDto.class)
+                   .addMapping(Skill::getKeyId, CreatedSkillDto::setId);
+
+        modelMapper.createTypeMap(Skill.class, UpdatedSkillDto.class)
+                   .addMapping(Skill::getKeyId, UpdatedSkillDto::setId);
     }
 }
