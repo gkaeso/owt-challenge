@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.persistence.*;
 
 import com.owt.api.core.BaseEntity;
+import com.owt.api.core.contact.manager.ContactManager;
 import com.owt.api.core.skill.Skill;
 
 import lombok.Getter;
@@ -62,6 +63,9 @@ public class Contact extends BaseEntity
                                                 foreignKey = @ForeignKey(name = "contact_skill_assoc_skill_id")))
     private final Set<Skill> skills = new HashSet<>();
 
+    @OneToMany(mappedBy = "contact", cascade = {CascadeType.PERSIST})
+    private final Set<ContactManager> managers = new HashSet<>();
+
     public Contact(String firstName, String lastName, String email, String phoneNumber, Address address)
     {
         this.firstName = firstName;
@@ -75,6 +79,11 @@ public class Contact extends BaseEntity
     {
         this.skills.clear();
         this.skills.addAll(skills);
+    }
+
+    public void addManager(String managerId)
+    {
+        managers.add(new ContactManager(this, managerId));
     }
 
     @Override

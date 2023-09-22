@@ -26,7 +26,7 @@ class ContactController implements ContactsApi
     public ResponseEntity<UUID> createContact(UserDetails principal, ContactDto contactDto)
     {
         contactDtoValidator.validate(contactDto);
-        Contact contact = contactService.save(modelMapper.map(contactDto, Contact.class));
+        Contact contact = contactService.create(principal, modelMapper.map(contactDto, Contact.class));
         return ResponseEntity.ok(contact.getKeyId());
     }
 
@@ -41,7 +41,7 @@ class ContactController implements ContactsApi
     public ResponseEntity<Void> updateContact(UserDetails principal, UUID id, ContactDto contactDto)
     {
         contactDtoValidator.validate(contactDto);
-        contactUpdateService.update(id, contactDto);
+        contactUpdateService.update(principal, id, contactDto);
         return ResponseEntity.noContent().build();
     }
 

@@ -2,6 +2,7 @@ package com.owt.api.core.contact;
 
 import java.util.UUID;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +16,9 @@ class ContactService
 {
     private final ContactRepository contactRepository;
 
-    Contact save(Contact contact)
+    Contact create(UserDetails principal, Contact contact)
     {
+        contact.addManager(principal.getUsername());
         return contactRepository.save(contact);
     }
 
@@ -24,6 +26,11 @@ class ContactService
     {
         return contactRepository.findByKeyId(keyId)
                                 .orElseThrow(() -> new ResourceNotFoundException(Contact.class, keyId));
+    }
+
+    Contact update(Contact contact)
+    {
+        return contactRepository.save(contact);
     }
 
     @Transactional

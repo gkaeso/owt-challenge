@@ -7,8 +7,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.owt.api.core.contact.manager.ContactManagerAccessService;
 import com.owt.api.core.skill.Level;
 import com.owt.api.core.skill.Skill;
 import com.owt.api.core.skill.SkillService;
@@ -24,10 +26,13 @@ public class ContactUpdateService
     private final ContactService contactService;
     private final SkillService skillService;
     private final ModelMapper modelMapper;
+    private final ContactManagerAccessService contactManagerAccessService;
 
-    void update(UUID keyId, ContactDto contactDto)
+    void update(UserDetails principal, UUID keyId, ContactDto contactDto)
     {
         Contact contact = contactService.getByKeyId(keyId);
+        contactManagerAccessService.validateAccess(principal.getUsername(), contact);
+
         Contact contactWithNewValues = modelMapper.map(contactDto, Contact.class);
 
         Optional.ofNullable(contactWithNewValues.getFirstName())
@@ -44,7 +49,7 @@ public class ContactUpdateService
                 .map(this::fetchRelevantSkills)
                 .ifPresent(contact::updateSkills);
 
-        contactService.save(contact);
+        contactService.update(contact);
     }
 
     private Set<Skill> fetchRelevantSkills(Collection<SkillDto> skillDtos)

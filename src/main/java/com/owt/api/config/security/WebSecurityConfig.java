@@ -69,7 +69,11 @@ public class WebSecurityConfig
                                 .password(passwordEncoder().encode("password"))
                                 .roles("ADMIN")
                                 .build();
-        return new InMemoryUserDetailsManager(Set.of(user1));
+        UserDetails user2 = User.withUsername("user2@mail.com")
+                                .password(passwordEncoder().encode("password"))
+                                .roles("ADMIN")
+                                .build();
+        return new InMemoryUserDetailsManager(Set.of(user1, user2));
     }
 
     @Bean

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.owt.api.config.TestConfig;
 import com.owt.api.config.handler.ExceptionHandlerConfig;
 import com.owt.api.config.mapper.ModelMapperConfig;
+import com.owt.api.core.contact.manager.ContactManagerAccessService;
 import com.owt.api.core.skill.Level;
 import com.owt.api.core.skill.SkillService;
 import com.owt.api.exception.ResourceNotFoundException;
@@ -54,6 +55,8 @@ class ContactControllerTest
     @MockBean
     SkillService skillService;
     @MockBean
+    ContactManagerAccessService contactManagerAccessService;
+    @MockBean
     ContactUpdateService contactUpdateService;
     static final String ENDPOINT = "/contacts";
 
@@ -77,7 +80,7 @@ class ContactControllerTest
     {
         // given
         Contact contact = contact();
-        when(contactService.save(any(Contact.class))).thenReturn(contact);
+        when(contactService.create(any(), any(Contact.class))).thenReturn(contact);
 
         // when / then
         mockMvc.perform(post(ENDPOINT).contentType(MediaType.APPLICATION_JSON)
@@ -91,7 +94,7 @@ class ContactControllerTest
     void createContact_whenValidRequestButResourceAlreadyExists_thenConflict() throws Exception
     {
         // given
-        when(contactService.save(any(Contact.class))).thenThrow(DataIntegrityViolationException.class);
+        when(contactService.create(any(), any(Contact.class))).thenThrow(DataIntegrityViolationException.class);
 
         // when / then
         mockMvc.perform(post(ENDPOINT).contentType(MediaType.APPLICATION_JSON)

@@ -57,6 +57,18 @@ public class ExceptionHandlerConfig
         };
     }
 
+    @Bean
+    ForbiddenResourceAccessExceptionHandler forbiddenResourceAccessException()
+    {
+        return (request, response, exception) -> {
+            response.setContentType("application/json;charset=UTF-8");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter()
+                    .write(objectMapper.writeValueAsString(errorDto(exception.getClass(),
+                                                                    exception.getMessage())));
+        };
+    }
+
     private ErrorDto errorDto(Class<?> clazz, String message)
     {
         return new ErrorDto().timestamp((clock.instant().atOffset(ZoneOffset.UTC)))
