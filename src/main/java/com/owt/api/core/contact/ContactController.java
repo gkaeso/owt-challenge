@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.owt.api.rest.controller.ContactsApi;
@@ -22,22 +23,22 @@ class ContactController implements ContactsApi
     private final ContactDtoValidator contactDtoValidator = new ContactDtoValidator();
 
     @Override
-    public ResponseEntity<UUID> createContact(ContactDto contactDto)
+    public ResponseEntity<UUID> createContact(UserDetails principal, ContactDto contactDto)
     {
         contactDtoValidator.validate(contactDto);
-        Contact c = contactService.save(modelMapper.map(contactDto, Contact.class));
-        return ResponseEntity.ok(c.getKeyId());
+        Contact contact = contactService.save(modelMapper.map(contactDto, Contact.class));
+        return ResponseEntity.ok(contact.getKeyId());
     }
 
     @Override
-    public ResponseEntity<ContactDto> getContact(UUID id)
+    public ResponseEntity<ContactDto> getContact(UserDetails principal, UUID id)
     {
         Contact contact = contactService.getByKeyId(id);
         return ResponseEntity.ok(modelMapper.map(contact, ContactDto.class));
     }
 
     @Override
-    public ResponseEntity<Void> updateContact(UUID id, ContactDto contactDto)
+    public ResponseEntity<Void> updateContact(UserDetails principal, UUID id, ContactDto contactDto)
     {
         contactDtoValidator.validate(contactDto);
         contactUpdateService.update(id, contactDto);
@@ -45,7 +46,7 @@ class ContactController implements ContactsApi
     }
 
     @Override
-    public ResponseEntity<Void> deleteContact(UUID id)
+    public ResponseEntity<Void> deleteContact(UserDetails principal, UUID id)
     {
         contactService.deleteById(id);
         return ResponseEntity.noContent().build();

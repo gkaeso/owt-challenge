@@ -12,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -57,6 +58,7 @@ class ContactControllerTest
     static final String ENDPOINT = "/contacts";
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void createContact_whenRequestBodyMissingRequiredParameters_thenBadRequest() throws Exception
     {
         // given
@@ -70,6 +72,7 @@ class ContactControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void createContact_whenValidRequest_thenOk() throws Exception
     {
         // given
@@ -84,6 +87,7 @@ class ContactControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void createContact_whenValidRequestButResourceAlreadyExists_thenConflict() throws Exception
     {
         // given
@@ -96,6 +100,7 @@ class ContactControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void getContact_whenInvalidRequest_thenNotFound() throws Exception
     {
         // given
@@ -108,6 +113,7 @@ class ContactControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void getContact_whenValidRequest_thenOk() throws Exception
     {
         // given
@@ -123,6 +129,7 @@ class ContactControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void updateContact_whenRequestBodyMissingRequiredParameters_thenBadRequest() throws Exception
     {
         // given
@@ -137,6 +144,7 @@ class ContactControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void updateContact_whenValidRequest_theNoContent() throws Exception
     {
         // given
@@ -155,6 +163,7 @@ class ContactControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void deleteContact_whenValidRequest_thenNoContent() throws Exception
     {
         // given

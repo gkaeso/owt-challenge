@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -48,6 +49,7 @@ class SkillControllerTest
     static final String ENDPOINT = "/skills";
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void createSkill_whenRequestBodyMissingRequiredParameters_thenBadRequest() throws Exception
     {
         // given
@@ -61,6 +63,7 @@ class SkillControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void createSkill_whenValidRequest_thenOk() throws Exception
     {
         // given
@@ -75,6 +78,7 @@ class SkillControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void createSkill_whenValidRequestButResourceAlreadyExists_thenConflict() throws Exception
     {
         // given
@@ -87,6 +91,7 @@ class SkillControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void getSkill_whenInvalidRequest_thenNotFound() throws Exception
     {
         // given
@@ -99,6 +104,7 @@ class SkillControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void getSkill_whenValidRequest_thenOk() throws Exception
     {
         // given
@@ -114,6 +120,7 @@ class SkillControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void updateSkill_whenRequestBodyMissingRequiredParameters_thenBadRequest() throws Exception
     {
         // given
@@ -128,6 +135,7 @@ class SkillControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void updateSkill_whenValidRequest_thenNoContent() throws Exception
     {
         // given
@@ -143,6 +151,7 @@ class SkillControllerTest
     }
 
     @Test
+    @WithUserDetails("user1@mail.com")
     void deleteSkill_whenValidRequest_thenNoContent() throws Exception
     {
         // given

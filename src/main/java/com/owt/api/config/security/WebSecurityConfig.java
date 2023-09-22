@@ -1,17 +1,17 @@
-package com.owt.api.config;
+package com.owt.api.config.security;
 
-import java.time.Clock;
 import java.util.Set;
 
-import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,35 +19,16 @@ import org.springframework.security.web.SecurityFilterChain;
 import com.owt.api.config.security.handler.ForbiddenErrorHandler;
 import com.owt.api.config.security.handler.UnauthorizedErrorHandler;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import lombok.RequiredArgsConstructor;
 
-@TestConfiguration
 @EnableWebSecurity
-public class TestConfig
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+@ConditionalOnWebApplication
+@RequiredArgsConstructor
+public class WebSecurityConfig
 {
-    @Bean
-    @Primary
-    public Clock clock()
-    {
-        Clock clock = mock(Clock.class);
-        when(clock.instant()).thenReturn(ClockFixture.now());
-        return clock;
-    }
-
-    @Bean
-    @Primary
-    public UnauthorizedErrorHandler unauthorizedErrorHandler()
-    {
-        return new UnauthorizedErrorHandler();
-    }
-
-    @Bean
-    @Primary
-    public ForbiddenErrorHandler forbiddenErrorHandler()
-    {
-        return new ForbiddenErrorHandler();
-    }
+    private final UnauthorizedErrorHandler authenticationErrorHandler;
+    private final ForbiddenErrorHandler forbiddenErrorHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception
@@ -58,8 +39,8 @@ public class TestConfig
                 .csrf().disable()
 
                 .exceptionHandling()
-                .authenticationEntryPoint(new UnauthorizedErrorHandler())
-                .accessDeniedHandler(new ForbiddenErrorHandler())
+                .authenticationEntryPoint(authenticationErrorHandler)
+                .accessDeniedHandler(forbiddenErrorHandler)
                 .and()
 
                 .headers()
@@ -82,37 +63,18 @@ public class TestConfig
     }
 
     @Bean
-    @Primary
     public UserDetailsService inMemoryUserDetailsManager()
     {
         UserDetails user1 = User.withUsername("user1@mail.com")
-                                .password(dummyPasswordEncoder().encode("password"))
+                                .password(passwordEncoder().encode("password"))
                                 .roles("ADMIN")
                                 .build();
-        UserDetails user2 = User.withUsername("user2@mail.com")
-                                .password(dummyPasswordEncoder().encode("password"))
-                                .roles("ADMIN")
-                                .build();
-        return new InMemoryUserDetailsManager(Set.of(user1, user2));
+        return new InMemoryUserDetailsManager(Set.of(user1));
     }
 
     @Bean
-    @Primary
-    public PasswordEncoder dummyPasswordEncoder()
+    public PasswordEncoder passwordEncoder()
     {
-        return new PasswordEncoder()
-        {
-            @Override
-            public String encode(CharSequence rawPassword)
-            {
-                return String.valueOf(rawPassword);
-            }
-
-            @Override
-            public boolean matches(CharSequence rawPassword, String encodedPassword)
-            {
-                return encodedPassword.equals(encode(rawPassword));
-            }
-        };
+        return new BCryptPasswordEncoder(8);
     }
 }
