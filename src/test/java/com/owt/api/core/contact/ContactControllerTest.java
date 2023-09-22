@@ -1,5 +1,6 @@
 package com.owt.api.core.contact;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -18,14 +19,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.owt.api.config.TestConfig;
 import com.owt.api.config.handler.ExceptionHandlerConfig;
 import com.owt.api.config.mapper.ModelMapperConfig;
-import com.owt.api.core.model.dto.*;
+import com.owt.api.core.skill.Level;
+import com.owt.api.core.skill.SkillService;
 import com.owt.api.exception.ResourceNotFoundException;
+import com.owt.api.rest.dto.ContactDto;
+import com.owt.api.rest.dto.LevelDto;
+import com.owt.api.rest.dto.SkillDto;
 
 import static com.owt.api.core.contact.__fixture__.ContactFixture.contact;
-import static com.owt.api.dto.contact.__fixture__.ContactDtoFixture.createContactDto;
-import static com.owt.api.dto.contact.__fixture__.ContactDtoFixture.updateContactDto;
+import static com.owt.api.core.skill.__fixture__.SkillFixture.skill;
+import static com.owt.api.rest.dto.contact.__fixture__.ContactDtoFixture.contactDto;
+import static com.owt.api.rest.dto.skill.__fixture__.SkillDtoFixture.skillDto;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -45,18 +50,22 @@ class ContactControllerTest
     ModelMapper modelMapper;
     @MockBean
     ContactService contactService;
+    @MockBean
+    SkillService skillService;
+    @MockBean
+    ContactUpdateService contactUpdateService;
     static final String ENDPOINT = "/contacts";
 
     @Test
     void createContact_whenRequestBodyMissingRequiredParameters_thenBadRequest() throws Exception
     {
         // given
-        CreateContactDto createContactDto = createContactDto();
-        createContactDto.email(null); // required
+        ContactDto contactDto = contactDto();
+        contactDto.email(null); // required
 
         // when / then
         mockMvc.perform(post(ENDPOINT).contentType(MediaType.APPLICATION_JSON)
-                                      .content(objectMapper.writeValueAsString(createContactDto)))
+                                      .content(objectMapper.writeValueAsString(contactDto)))
                .andExpect(status().isBadRequest());
     }
 
@@ -65,25 +74,24 @@ class ContactControllerTest
     {
         // given
         Contact contact = contact();
-        when(contactService.create(any(Contact.class))).thenReturn(contact);
-        CreatedContactDto createdContactDto = modelMapper.map(contact, CreatedContactDto.class);
+        when(contactService.save(any(Contact.class))).thenReturn(contact);
 
         // when / then
         mockMvc.perform(post(ENDPOINT).contentType(MediaType.APPLICATION_JSON)
-                                      .content(objectMapper.writeValueAsString(createContactDto())))
+                                      .content(objectMapper.writeValueAsString(contactDto())))
                .andExpect(status().isOk())
-               .andExpect(content().json(objectMapper.writeValueAsString(createdContactDto)));
+               .andExpect(content().json(objectMapper.writeValueAsString(contact.getKeyId())));
     }
 
     @Test
     void createContact_whenValidRequestButResourceAlreadyExists_thenConflict() throws Exception
     {
         // given
-        when(contactService.create(any(Contact.class))).thenThrow(DataIntegrityViolationException.class);
+        when(contactService.save(any(Contact.class))).thenThrow(DataIntegrityViolationException.class);
 
         // when / then
         mockMvc.perform(post(ENDPOINT).contentType(MediaType.APPLICATION_JSON)
-                                      .content(objectMapper.writeValueAsString(createContactDto())))
+                                      .content(objectMapper.writeValueAsString(contactDto())))
                .andExpect(status().isConflict());
     }
 
@@ -105,7 +113,7 @@ class ContactControllerTest
         // given
         Contact contact = contact();
         when(contactService.getByKeyId(any(UUID.class))).thenReturn(contact);
-        ReadContactDto readContactDto = modelMapper.map(contact, ReadContactDto.class);
+        ContactDto readContactDto = modelMapper.map(contact, ContactDto.class);
 
         // when / then
         String readEndpoint = ENDPOINT + "/" + UUID.randomUUID();
@@ -118,7 +126,7 @@ class ContactControllerTest
     void updateContact_whenRequestBodyMissingRequiredParameters_thenBadRequest() throws Exception
     {
         // given
-        UpdateContactDto updateContactDto = updateContactDto();
+        ContactDto updateContactDto = contactDto();
         updateContactDto.email(null); // required
 
         // when / then
@@ -129,24 +137,25 @@ class ContactControllerTest
     }
 
     @Test
-    void updateContact_whenValidRequest_thenOk() throws Exception
+    void updateContact_whenValidRequest_theNoContent() throws Exception
     {
         // given
         Contact contact = contact();
-        UpdateContactDto updateContactDto = updateContactDto();
-        UpdatedContactDto updatedContactDto = modelMapper.map(contact, UpdatedContactDto.class);
-        when(contactService.update(eq(contact.getKeyId()), any(Contact.class))).thenReturn(contact);
+        SkillDto skillDto = skillDto("running", LevelDto.JUNIOR);
+        ContactDto contactDto = contactDto(List.of(skillDto));
+        when(contactService.getByKeyId(contact.getKeyId())).thenReturn(contact);
+        when(skillService.find(skillDto.getName(), Level.valueOf(skillDto.getLevel().name())))
+                .thenReturn(skill());
 
         // when / then
         String updateEndpoint = ENDPOINT + "/" + contact.getKeyId();
         mockMvc.perform(put(updateEndpoint).contentType(MediaType.APPLICATION_JSON)
-                                           .content(objectMapper.writeValueAsString(updateContactDto)))
-               .andExpect(status().isOk())
-               .andExpect(content().json(objectMapper.writeValueAsString(updatedContactDto)));
+                                           .content(objectMapper.writeValueAsString(contactDto)))
+               .andExpect(status().isNoContent());
     }
 
     @Test
-    void deleteContact_whenValidRequest_thenOk() throws Exception
+    void deleteContact_whenValidRequest_thenNoContent() throws Exception
     {
         // given
         doNothing().when(contactService).deleteById(any(UUID.class));

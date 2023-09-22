@@ -93,8 +93,8 @@
                         <configuration>
                             <inputSpec>${project.basedir}/src/main/resources/static/swagger.yaml</inputSpec>
                             <generatorName>spring</generatorName>
-                            <apiPackage>com.owt.api.controller</apiPackage>
-                            <modelPackage>com.owt.api.core.model.dto</modelPackage>
+                            <apiPackage>com.owt.api.rest.controller</apiPackage>
+                            <modelPackage>com.owt.api.rest.dto</modelPackage>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>data-platform-openapi</artifactId>
                             <artifactVersion>${project.version}</artifactVersion>

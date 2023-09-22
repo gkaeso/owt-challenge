@@ -23,19 +23,20 @@ paths:
       operationId: createContact
       requestBody:
         required: true
-        description: contactDto
+        description: the contact to create
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/CreateContactDto'
+              $ref: '#/components/schemas/ContactDto'
       responses:
         200:
-          description: return created contact
+          description: the created contact id
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreatedContactDto'
-      x-codegen-request-body-name: contactDto
+                type: string
+                format: uuid
+  #      x-codegen-request-body-name: contact
   /contacts/{id}:
     get:
       tags:
@@ -51,11 +52,11 @@ paths:
             format: uuid
       responses:
         200:
-          description: return updated contact
+          description: the requested contact
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReadContactDto'
+                $ref: '#/components/schemas/ContactDto'
     put:
       tags:
         - contacts
@@ -73,15 +74,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateContactDto'
+              $ref: '#/components/schemas/ContactDto'
       responses:
-        200:
-          description: return updated contact
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UpdatedContactDto'
-      x-codegen-request-body-name: contactDto
+        204:
+          description: contact has been updated
+          content: { }
+    #      x-codegen-request-body-name: contact
     delete:
       tags:
         - contacts
@@ -96,7 +94,7 @@ paths:
             format: uuid
       responses:
         204:
-          description: contact has been delete
+          description: contact has been deleted
           content: { }
 
   /skills:
@@ -111,15 +109,16 @@ paths:
         content:
           'application/json':
             schema:
-              $ref: '#/components/schemas/CreateSkillDto'
+              $ref: '#/components/schemas/SkillDto'
       responses:
         200:
-          description: return created skill
+          description: return created skill id
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreatedSkillDto'
-      x-codegen-request-body-name: skillDto
+                type: string
+                format: uuid
+  #      x-codegen-request-body-name: skill
   /skills/{id}:
     get:
       tags:
@@ -135,11 +134,11 @@ paths:
             format: uuid
       responses:
         200:
-          description: return updated skill
+          description: return requested skill
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReadSkillDto'
+                $ref: '#/components/schemas/SkillDto'
     put:
       tags:
         - skills
@@ -157,15 +156,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateSkillDto'
+              $ref: '#/components/schemas/SkillDto'
       responses:
         200:
-          description: return updated skill
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UpdatedSkillDto'
-      x-codegen-request-body-name: skillDto
+          description: skill has been updated
+          content: { }
+    #      x-codegen-request-body-name: skill
     delete:
       tags:
         - skills
@@ -180,7 +176,7 @@ paths:
             format: uuid
       responses:
         204:
-          description: skill is deleted
+          description: skill has been deleted
           content: { }
 
 components:
@@ -188,6 +184,10 @@ components:
     # Contact
     AddressDto:
       type: object
+      required:
+        - street
+        - postCode
+        - city
       properties:
         street:
           type: string
@@ -197,10 +197,11 @@ components:
           type: string
     ContactDto:
       type: object
+      required:
+        - firstName
+        - lastName
+        - email
       properties:
-        id:
-          type: string
-          format: uuid
         firstName:
           type: string
         lastName:
@@ -211,59 +212,10 @@ components:
           type: string
         address:
           $ref: '#/components/schemas/AddressDto'
-    CreateContactDto:
-      allOf:
-        - type: object
-          required:
-            - firstName
-            - lastName
-            - email
-            - phone
-            - address
-        - $ref: '#/components/schemas/ContactDto'
-    CreatedContactDto:
-      allOf:
-        - type: object
-          required:
-            - id
-            - firstName
-            - lastName
-            - email
-            - phone
-            - address
-        - $ref: '#/components/schemas/ContactDto'
-    ReadContactDto:
-      allOf:
-        - type: object
-          required:
-            - id
-            - firstName
-            - lastName
-            - email
-            - phone
-            - address
-        - $ref: '#/components/schemas/ContactDto'
-    UpdateContactDto:
-      allOf:
-        - type: object
-          required:
-            - firstName
-            - lastName
-            - email
-            - phone
-            - address
-        - $ref: '#/components/schemas/ContactDto'
-    UpdatedContactDto:
-      allOf:
-        - type: object
-          required:
-            - id
-            - firstName
-            - lastName
-            - email
-            - phone
-            - address
-        - $ref: '#/components/schemas/ContactDto'
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillDto'
     # Skill
     LevelDto:
       type: string
@@ -273,51 +225,14 @@ components:
         - EXPERT
     SkillDto:
       type: object
+      required:
+        - name
+        - level
       properties:
-        id:
-          type: string
-          format: uuid
         name:
           type: string
         level:
           $ref: '#/components/schemas/LevelDto'
-    CreateSkillDto:
-      allOf:
-        - type: object
-          required:
-            - name
-            - level
-        - $ref: '#/components/schemas/SkillDto'
-    CreatedSkillDto:
-      allOf:
-        - type: object
-          required:
-            - id
-            - name
-            - level
-        - $ref: '#/components/schemas/SkillDto'
-    ReadSkillDto:
-      allOf:
-        - type: object
-          required:
-            - id
-            - name
-        - $ref: '#/components/schemas/SkillDto'
-    UpdateSkillDto:
-      allOf:
-        - type: object
-          required:
-            - name
-            - level
-        - $ref: '#/components/schemas/SkillDto'
-    UpdatedSkillDto:
-      allOf:
-        - type: object
-          required:
-            - id
-            - name
-            - level
-        - $ref: '#/components/schemas/SkillDto'
     # Error
     ErrorDto:
       type: object

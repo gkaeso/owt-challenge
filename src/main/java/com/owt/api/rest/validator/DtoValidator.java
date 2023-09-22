@@ -1,4 +1,4 @@
-package com.owt.api.dto.validator;
+package com.owt.api.rest.validator;
 
 import java.util.Arrays;
 import java.util.Objects;

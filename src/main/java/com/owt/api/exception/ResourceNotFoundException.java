@@ -8,4 +8,9 @@ public class ResourceNotFoundException extends RuntimeException
     {
         super(String.format("Resource %s %s not found", type.getSimpleName(), keyId));
     }
+
+    public ResourceNotFoundException(Class<?> type, String identifier)
+    {
+        super(String.format("Resource %s %s not found", type.getSimpleName(), identifier));
+    }
 }

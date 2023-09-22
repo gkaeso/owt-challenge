@@ -12,4 +12,6 @@ public interface SkillRepository extends JpaRepository<Skill, Long>
     Optional<Skill> findByKeyId(UUID keyId);
 
     void deleteByKeyId(UUID keyId);
+
+    Optional<Skill> findByNameAndLevel(String name, Level level);
 }

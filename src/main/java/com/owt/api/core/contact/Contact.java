@@ -1,10 +1,13 @@
 package com.owt.api.core.contact;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.*;
 
 import com.owt.api.core.BaseEntity;
+import com.owt.api.core.skill.Skill;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,6 +51,17 @@ public class Contact extends BaseEntity
     @Embedded
     private Address address;
 
+    @Getter
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "contact_skill_assoc",
+               joinColumns = @JoinColumn(nullable = false,
+                                         name = "contact_id",
+                                         foreignKey = @ForeignKey(name = "fk_contact_skill_assoc_contact_id")),
+               inverseJoinColumns = @JoinColumn(nullable = false,
+                                                name = "skill_id",
+                                                foreignKey = @ForeignKey(name = "contact_skill_assoc_skill_id")))
+    private final Set<Skill> skills = new HashSet<>();
+
     public Contact(String firstName, String lastName, String email, String phoneNumber, Address address)
     {
         this.firstName = firstName;
@@ -55,6 +69,12 @@ public class Contact extends BaseEntity
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.address = address;
+    }
+
+    public void updateSkills(Set<Skill> skills)
+    {
+        this.skills.clear();
+        this.skills.addAll(skills);
     }
 
     @Override

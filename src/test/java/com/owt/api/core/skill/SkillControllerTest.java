@@ -18,12 +18,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.owt.api.config.TestConfig;
 import com.owt.api.config.handler.ExceptionHandlerConfig;
 import com.owt.api.config.mapper.ModelMapperConfig;
-import com.owt.api.core.model.dto.*;
 import com.owt.api.exception.ResourceNotFoundException;
+import com.owt.api.rest.dto.SkillDto;
 
 import static com.owt.api.core.skill.__fixture__.SkillFixture.skill;
-import static com.owt.api.dto.skill.__fixture__.SkillDtoFixture.createSkillDto;
-import static com.owt.api.dto.skill.__fixture__.SkillDtoFixture.updateSkillDto;
+import static com.owt.api.rest.dto.skill.__fixture__.SkillDtoFixture.skillDto;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -52,7 +51,7 @@ class SkillControllerTest
     void createSkill_whenRequestBodyMissingRequiredParameters_thenBadRequest() throws Exception
     {
         // given
-        CreateSkillDto createSkillDto = createSkillDto();
+        SkillDto createSkillDto = skillDto();
         createSkillDto.name(null); // required
 
         // when / then
@@ -67,13 +66,12 @@ class SkillControllerTest
         // given
         Skill skill = skill();
         when(skillService.create(any(Skill.class))).thenReturn(skill);
-        CreatedSkillDto createdSkillDto = modelMapper.map(skill, CreatedSkillDto.class);
 
         // when / then
         mockMvc.perform(post(ENDPOINT).contentType(MediaType.APPLICATION_JSON)
-                                      .content(objectMapper.writeValueAsString(createSkillDto())))
+                                      .content(objectMapper.writeValueAsString(skillDto())))
                .andExpect(status().isOk())
-               .andExpect(content().json(objectMapper.writeValueAsString(createdSkillDto)));
+               .andExpect(content().json(objectMapper.writeValueAsString(skill.getKeyId())));
     }
 
     @Test
@@ -84,7 +82,7 @@ class SkillControllerTest
 
         // when / then
         mockMvc.perform(post(ENDPOINT).contentType(MediaType.APPLICATION_JSON)
-                                      .content(objectMapper.writeValueAsString(createSkillDto())))
+                                      .content(objectMapper.writeValueAsString(skillDto())))
                .andExpect(status().isConflict());
     }
 
@@ -106,7 +104,7 @@ class SkillControllerTest
         // given
         Skill skill = skill();
         when(skillService.getByKeyId(any(UUID.class))).thenReturn(skill);
-        ReadSkillDto readSkillDto = modelMapper.map(skill, ReadSkillDto.class);
+        SkillDto readSkillDto = modelMapper.map(skill, SkillDto.class);
 
         // when / then
         String readEndpoint = ENDPOINT + "/" + UUID.randomUUID();
@@ -119,7 +117,7 @@ class SkillControllerTest
     void updateSkill_whenRequestBodyMissingRequiredParameters_thenBadRequest() throws Exception
     {
         // given
-        UpdateSkillDto updateSkillDto = updateSkillDto();
+        SkillDto updateSkillDto = skillDto();
         updateSkillDto.name(null); // required
 
         // when / then
@@ -130,24 +128,22 @@ class SkillControllerTest
     }
 
     @Test
-    void updateSkill_whenValidRequest_thenOk() throws Exception
+    void updateSkill_whenValidRequest_thenNoContent() throws Exception
     {
         // given
         Skill skill = skill();
-        UpdateSkillDto updateSkillDto = updateSkillDto();
-        UpdatedSkillDto updatedSkillDto = modelMapper.map(skill, UpdatedSkillDto.class);
+        SkillDto updateSkillDto = skillDto();
         when(skillService.update(eq(skill.getKeyId()), any(Skill.class))).thenReturn(skill);
 
         // when / then
         String updateEndpoint = ENDPOINT + "/" + skill.getKeyId();
         mockMvc.perform(put(updateEndpoint).contentType(MediaType.APPLICATION_JSON)
                                            .content(objectMapper.writeValueAsString(updateSkillDto)))
-               .andExpect(status().isOk())
-               .andExpect(content().json(objectMapper.writeValueAsString(updatedSkillDto)));
+               .andExpect(status().isNoContent());
     }
 
     @Test
-    void deleteSkill_whenValidRequest_thenOk() throws Exception
+    void deleteSkill_whenValidRequest_thenNoContent() throws Exception
     {
         // given
         doNothing().when(skillService).deleteById(any(UUID.class));

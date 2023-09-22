@@ -1,6 +1,5 @@
 package com.owt.api.core.contact;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -16,7 +15,7 @@ class ContactService
 {
     private final ContactRepository contactRepository;
 
-    Contact create(Contact contact)
+    Contact save(Contact contact)
     {
         return contactRepository.save(contact);
     }
@@ -27,26 +26,8 @@ class ContactService
                                 .orElseThrow(() -> new ResourceNotFoundException(Contact.class, keyId));
     }
 
-    Contact update(UUID keyId, Contact newContact)
-    {
-        Contact contact = getByKeyId(keyId);
-
-        Optional.ofNullable(newContact.getFirstName())
-                .ifPresent(contact::setFirstName);
-        Optional.ofNullable(newContact.getLastName())
-                .ifPresent(contact::setLastName);
-        Optional.ofNullable(newContact.getEmail())
-                .ifPresent(contact::setEmail);
-        Optional.ofNullable(newContact.getPhoneNumber())
-                .ifPresent(contact::setPhoneNumber);
-        Optional.ofNullable(newContact.getAddress())
-                .ifPresent(contact::setAddress);
-
-        return contactRepository.save(contact);
-    }
-
     @Transactional
-    void deleteById(UUID keyId)
+    public void deleteById(UUID keyId)
     {
         contactRepository.deleteByKeyId(keyId);
     }

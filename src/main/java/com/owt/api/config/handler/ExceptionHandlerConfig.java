@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.owt.api.core.model.dto.ErrorDto;
+import com.owt.api.rest.dto.ErrorDto;
 
 import lombok.RequiredArgsConstructor;
 

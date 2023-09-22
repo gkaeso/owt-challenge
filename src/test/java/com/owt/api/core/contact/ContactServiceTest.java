@@ -11,12 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.owt.api.exception.ResourceNotFoundException;
 
-import static com.owt.api.core.contact.__fixture__.AddressFixture.address;
 import static com.owt.api.core.contact.__fixture__.ContactFixture.contact;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,37 +49,5 @@ class ContactServiceTest
 
         // when / then
         assertThatExceptionOfType(ResourceNotFoundException.class).isThrownBy(() -> contactService.getByKeyId(keyId));
-    }
-
-    @Test
-    void update_whenValid_thenReturnsUpdatedContact()
-    {
-        // given
-        Contact contact = contact("John", "Doe", "john.doe@mail.com",
-                                  "0123456789", address("street", "1234", "city"));
-        Contact contactWithNewValues = contact("Jessie", "James", "jesse.james@mail.com",
-                                               "9876543210", address("way", "4321", "town"));
-        when(contactRepository.findByKeyId(contact.getKeyId())).thenReturn(Optional.of(contact));
-        when(contactRepository.save(any(Contact.class))).then(returnsFirstArg());
-
-        // when
-        Contact updatedContact = contactService.update(contact.getKeyId(), contactWithNewValues);
-
-        // then
-        assertThat(updatedContact).isNotNull()
-                                  .isEqualTo(contact);
-        assertThat(updatedContact.getKeyId()).isNotNull()
-                                             .isEqualTo(contact.getKeyId()); // has not been modified
-        assertThat(updatedContact.getFirstName()).isNotNull()
-                                                 .isNotEmpty()
-                                                 .isEqualTo(contactWithNewValues.getFirstName());
-        assertThat(updatedContact.getLastName()).isNotNull()
-                                                .isNotEmpty()
-                                                .isEqualTo(contactWithNewValues.getLastName());
-        assertThat(updatedContact.getEmail()).isNotNull()
-                                             .isNotEmpty()
-                                             .isEqualTo(contactWithNewValues.getEmail());
-        assertThat(updatedContact.getAddress()).isNotNull()
-                                               .isEqualTo(contactWithNewValues.getAddress());
     }
 }

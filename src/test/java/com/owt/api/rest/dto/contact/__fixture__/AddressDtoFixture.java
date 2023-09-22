@@ -1,6 +1,7 @@
-package com.owt.api.dto.contact.__fixture__;
+package com.owt.api.rest.dto.contact.__fixture__;
 
-import com.owt.api.core.model.dto.AddressDto;
+
+import com.owt.api.rest.dto.AddressDto;
 
 public class AddressDtoFixture
 {

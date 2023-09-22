@@ -6,9 +6,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.owt.api.controller.ContactsApi;
-import com.owt.api.core.model.dto.*;
-import com.owt.api.dto.validator.ContactDtoValidator;
+import com.owt.api.rest.controller.ContactsApi;
+import com.owt.api.rest.dto.ContactDto;
+import com.owt.api.rest.validator.ContactDtoValidator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,29 +18,30 @@ class ContactController implements ContactsApi
 {
     private final ModelMapper modelMapper;
     private final ContactService contactService;
+    private final ContactUpdateService contactUpdateService;
     private final ContactDtoValidator contactDtoValidator = new ContactDtoValidator();
 
     @Override
-    public ResponseEntity<CreatedContactDto> createContact(CreateContactDto contactDto)
+    public ResponseEntity<UUID> createContact(ContactDto contactDto)
     {
         contactDtoValidator.validate(contactDto);
-        Contact contact = contactService.create(modelMapper.map(contactDto, Contact.class));
-        return ResponseEntity.ok(modelMapper.map(contact, CreatedContactDto.class));
+        Contact c = contactService.save(modelMapper.map(contactDto, Contact.class));
+        return ResponseEntity.ok(c.getKeyId());
     }
 
     @Override
-    public ResponseEntity<ReadContactDto> getContact(UUID id)
+    public ResponseEntity<ContactDto> getContact(UUID id)
     {
         Contact contact = contactService.getByKeyId(id);
-        return ResponseEntity.ok(modelMapper.map(contact, ReadContactDto.class));
+        return ResponseEntity.ok(modelMapper.map(contact, ContactDto.class));
     }
 
     @Override
-    public ResponseEntity<UpdatedContactDto> updateContact(UUID id, UpdateContactDto contactDto)
+    public ResponseEntity<Void> updateContact(UUID id, ContactDto contactDto)
     {
         contactDtoValidator.validate(contactDto);
-        Contact contact = contactService.update(id, modelMapper.map(contactDto, Contact.class));
-        return ResponseEntity.ok(modelMapper.map(contact, UpdatedContactDto.class));
+        contactUpdateService.update(id, contactDto);
+        return ResponseEntity.noContent().build();
     }
 
     @Override

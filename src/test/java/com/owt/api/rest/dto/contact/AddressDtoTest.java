@@ -1,4 +1,4 @@
-package com.owt.api.dto.contact;
+package com.owt.api.rest.dto.contact;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,10 +10,10 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import com.owt.api.config.mapper.ModelMapperConfig;
 import com.owt.api.core.contact.Address;
-import com.owt.api.core.model.dto.AddressDto;
+import com.owt.api.rest.dto.AddressDto;
 
 import static com.owt.api.core.contact.__fixture__.AddressFixture.address;
-import static com.owt.api.dto.contact.__fixture__.AddressDtoFixture.addressDto;
+import static com.owt.api.rest.dto.contact.__fixture__.AddressDtoFixture.addressDto;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
